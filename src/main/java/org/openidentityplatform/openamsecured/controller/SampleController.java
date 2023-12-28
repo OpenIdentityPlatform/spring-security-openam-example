@@ -32,6 +32,8 @@ public class SampleController {
 
     @GetMapping("/protected-openam")
     public String cookieProtected(Model model,  @AuthenticationPrincipal String principal) {
+        model.addAttribute("userName", principal);
+        model.addAttribute("method", "OpenAM Cookie");
         return "protected";
     }
 }
