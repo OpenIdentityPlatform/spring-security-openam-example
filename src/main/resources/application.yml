@@ -1,36 +1,36 @@
 server:
   port: 8081
-#spring:
-#  security:
-#    oauth2:
-#      client:
-#        registration:
-#          openam:
-#            authorization-grant-type: authorization_code
-#            client-id: test_client
-#            client-secret: changeme
-#            scope:
-#              - openid
-#              - profile
-#        provider:
-#          openam:
-#            authorization-uri: http://openam.example.org:8080/openam/oauth2/authorize
-#            token-uri: http://openam.example.org:8080/openam/oauth2/access_token
-#            user-name-attribute: sub
-#            issuer-uri: http://openam.example.org:8080/openam/oauth2
-#    saml2:
-#      relyingparty:
-#        registration:
-#          openam:
-#            signing:
-#              credentials:
-#              - private-key-location: classpath:credentials/rp-private.key
-#                certificate-location: classpath:credentials/rp-certificate.crt
-#            singlelogout:
-#              binding: POST
-#              url: "{baseUrl}/logout/saml2/slo"
-#            assertingparty:
-#              metadata-uri: http://openam.example.org:8080/openam/saml2/jsp/exportmetadata.jsp
+spring:
+  security:
+    oauth2:
+      client:
+        registration:
+          openam:
+            authorization-grant-type: authorization_code
+            client-id: test_client
+            client-secret: changeme
+            scope:
+              - openid
+              - profile
+        provider:
+          openam:
+            authorization-uri: http://openam.example.org:8080/openam/oauth2/authorize
+            token-uri: http://openam.example.org:8080/openam/oauth2/access_token
+            user-name-attribute: sub
+            issuer-uri: http://openam.example.org:8080/openam/oauth2
+    saml2:
+      relyingparty:
+        registration:
+          openam:
+            signing:
+              credentials:
+              - private-key-location: classpath:credentials/rp-private.key
+                certificate-location: classpath:credentials/rp-certificate.crt
+            singlelogout:
+              binding: POST
+              url: "{baseUrl}/logout/saml2/slo"
+            assertingparty:
+              metadata-uri: http://openam.example.org:8080/openam/saml2/jsp/exportmetadata.jsp
 
 logging:
   level:

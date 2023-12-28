@@ -4,53 +4,62 @@ package org.openidentityplatform.openamsecured.configuration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
-import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.rememberme.RememberMeAuthenticationFilter;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfiguration {
-
-
-//    @Bean
-//    @Order(1)
-//    public SecurityFilterChain securityWebFilterChain(HttpSecurity http) throws Exception {
-//        http.authorizeHttpRequests((authorize) -> authorize.requestMatchers("/", "/oauth2/**")
-//                        .permitAll()
-//                        .requestMatchers("/protected-oauth").authenticated())
-//                .oauth2Login(Customizer.withDefaults()).oauth2Client(Customizer.withDefaults()
-//                );
-//        return http.build();
-//    }
-
-//    @Bean
-//    @Order(2)
-//    public SecurityFilterChain securitySamlFilterChain(HttpSecurity http) throws Exception {
-//        http.authorizeHttpRequests((authorize) -> authorize.requestMatchers("/")
-//                        .permitAll()
-//                        .requestMatchers("/protected-saml").authenticated())
-//                .saml2Metadata(withDefaults())
-//                .saml2Login(withDefaults())
-//                .saml2Logout(withDefaults());
-//        return http.build();
-//    }
-
     @Bean
-    @Order(3)
-    public SecurityFilterChain securityOpenAmFilterChain(HttpSecurity http, AuthenticationConfiguration authConfig) throws Exception {
-        http.addFilterAt(new OpenAmAuthenticationFilter(), RememberMeAuthenticationFilter.class)
-                .authorizeHttpRequests((authorize) -> authorize.requestMatchers("/", "/error")
-                .permitAll()
-                        .requestMatchers("/protected-openam").authenticated())
-                .exceptionHandling(e ->
-                        e.authenticationEntryPoint((request, response, authException) -> response.sendRedirect("/openam-auth")));
+    @Order(1)
+    public SecurityFilterChain securityWebFilterChain(HttpSecurity http) throws Exception {
+        http.securityMatcher("/protected-oauth", "/oauth2/**", "/login/oauth2/**").authorizeHttpRequests((authorize) ->
+                        authorize.anyRequest().fullyAuthenticated())
+                .oauth2Login(Customizer.withDefaults())
+                .oauth2Client(Customizer.withDefaults());
         return http.build();
     }
 
+    @Bean
+    @Order(2)
+    public SecurityFilterChain securitySamlFilterChain(HttpSecurity http) throws Exception {
+        http.securityMatcher("/protected-saml", "/saml2/**", "/login/saml2/**")
+                .authorizeHttpRequests((authorize) ->
+                        authorize.requestMatchers("/saml2/**").permitAll()
+                                .requestMatchers("/protected-saml").fullyAuthenticated())
+                .saml2Metadata(Customizer.withDefaults())
+                .saml2Login(Customizer.withDefaults());
+        return http.build();
+    }
 
+    @Bean
+    @Order(3)
+    public SecurityFilterChain securityOpenAmFilterChain(HttpSecurity http) throws Exception {
+        http.securityMatcher("/protected-openam", OpenAmAuthenticationFilter.OPENAM_AUTH_URI)
+                .addFilterAt(new OpenAmAuthenticationFilter(), RememberMeAuthenticationFilter.class)
+                .authorizeHttpRequests((authorize) ->
+                        authorize.anyRequest().fullyAuthenticated())
+                .exceptionHandling(e ->
+                        e.authenticationEntryPoint((request, response, authException) ->
+                                response.sendRedirect(OpenAmAuthenticationFilter.OPENAM_AUTH_URI)));
+        return http.build();
+    }
+
+    @Bean
+    @Order(0)
+    public SecurityFilterChain securityPermitAllFilterChain(HttpSecurity http) throws Exception {
+        http.securityMatcher("/", "/error", "/logout")
+                .authorizeHttpRequests((authorize) -> authorize.anyRequest().permitAll())
+                .logout(logout ->
+                        logout.logoutSuccessUrl("/?logout")
+                                .logoutRequestMatcher(AntPathRequestMatcher.antMatcher("/logout")));
+
+        return http.build();
+    }
 }
 
 
