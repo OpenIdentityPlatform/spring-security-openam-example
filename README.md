@@ -4,4 +4,4 @@ The following project demonstrates OpenAM and Spring Security integration method
 
 - OAuth2/OIDC protocol
 - SAMLv2 
-- OpenAM cookie session
+- OpenAM Session Cookie 
