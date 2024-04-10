@@ -44,7 +44,7 @@ public class SecurityConfiguration {
     @Profile("cookie")
     public SecurityFilterChain securityOpenAmFilterChain(HttpSecurity http) throws Exception {
         http.securityMatcher("/protected-openam", OpenAmAuthenticationFilter.OPENAM_AUTH_URI)
-                .addFilterAt(new OpenAmAuthenticationFilter(), RememberMeAuthenticationFilter.class)
+                .addFilterAt(openAmAuthenticationFilter(), RememberMeAuthenticationFilter.class)
                 .authorizeHttpRequests((authorize) ->
                         authorize.anyRequest().fullyAuthenticated())
                 .exceptionHandling(e ->
@@ -63,6 +63,11 @@ public class SecurityConfiguration {
                                 .logoutRequestMatcher(AntPathRequestMatcher.antMatcher("/logout")));
 
         return http.build();
+    }
+
+    @Bean
+    public OpenAmAuthenticationFilter openAmAuthenticationFilter() {
+        return new OpenAmAuthenticationFilter();
     }
 }
 

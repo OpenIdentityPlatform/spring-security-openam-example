@@ -1,5 +1,8 @@
 server:
   port: 8081
+openam:
+  auth:
+    realm: "/"
 logging:
   level:
     org:
