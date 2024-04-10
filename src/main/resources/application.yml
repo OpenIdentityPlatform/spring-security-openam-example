@@ -1,6 +1,18 @@
 server:
   port: 8081
+logging:
+  level:
+    org:
+      springframework:
+        security: DEBUG
 spring:
+  profiles:
+    active: "cookie"
+---
+spring:
+  config:
+    activate:
+      on-profile: "oauth"
   security:
     oauth2:
       client:
@@ -18,6 +30,12 @@ spring:
             token-uri: http://openam.example.org:8080/openam/oauth2/access_token
             user-name-attribute: sub
             issuer-uri: http://openam.example.org:8080/openam/oauth2
+---
+spring:
+  config:
+    activate:
+      on-profile: "saml"
+  security:
     saml2:
       relyingparty:
         registration:
@@ -32,8 +50,3 @@ spring:
             assertingparty:
               metadata-uri: http://openam.example.org:8080/openam/saml2/jsp/exportmetadata.jsp
 
-logging:
-  level:
-    org:
-      springframework:
-        security: DEBUG

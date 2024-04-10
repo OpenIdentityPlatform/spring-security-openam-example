@@ -3,6 +3,7 @@ package org.openidentityplatform.openamsecured.configuration;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -16,6 +17,7 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 public class SecurityConfiguration {
     @Bean
     @Order(1)
+    @Profile("oauth")
     public SecurityFilterChain securityWebFilterChain(HttpSecurity http) throws Exception {
         http.securityMatcher("/protected-oauth", "/oauth2/**", "/login/oauth2/**").authorizeHttpRequests((authorize) ->
                         authorize.anyRequest().fullyAuthenticated())
@@ -26,6 +28,7 @@ public class SecurityConfiguration {
 
     @Bean
     @Order(2)
+    @Profile("saml")
     public SecurityFilterChain securitySamlFilterChain(HttpSecurity http) throws Exception {
         http.securityMatcher("/protected-saml", "/saml2/**", "/login/saml2/**")
                 .authorizeHttpRequests((authorize) ->
@@ -38,6 +41,7 @@ public class SecurityConfiguration {
 
     @Bean
     @Order(3)
+    @Profile("cookie")
     public SecurityFilterChain securityOpenAmFilterChain(HttpSecurity http) throws Exception {
         http.securityMatcher("/protected-openam", OpenAmAuthenticationFilter.OPENAM_AUTH_URI)
                 .addFilterAt(new OpenAmAuthenticationFilter(), RememberMeAuthenticationFilter.class)
